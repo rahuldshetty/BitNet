@@ -28,12 +28,6 @@ einops = "*"
 zetascale = "*"
 
 
-
-
-[tool.poetry.dev-dependencies]
-# Add development dependencies here
-
-
 [tool.poetry.group.lint.dependencies]
 ruff = "^0.0.249"
 types-toml = "^0.10.8.1"
