@@ -58,15 +58,16 @@ class BitLinear(nn.Module):
         # Apply Layer Normalization
         input_norm = F.layer_norm(input, (self.in_features,))
 
-        # Absmax Quantization
-        quant_scale = torch.max(torch.abs(input_norm), dim=1, keepdim=True).values
-        input_quant = torch.sign(input_norm) * (quant_scale / self.gamma)
+        # Absmean Quantization
+        # quant_scale = torch.max(torch.abs(input_norm), dim=1, keepdim=True).values
+        quant_scale = torch.mean(self.weight)
+        input_quant = input_norm / (quant_scale + self.gamma)
 
-        # 1-bit Weights Quantization
-        weight_quant = torch.sign(self.weight)
+        # 1.58-bit Weights Quantization
+        weight_quant = max(-1, min(1, torch.round(input_quant))
 
         # MatMul with 1-bit weights using torch.matmul for explicit operation
-        output = torch.matmul(input_quant, weight_quant.t())
+        output = torch.matmul(input_norm, weight_quant.t())
 
         # Adding bias if it exists
         if self.bias is not None:
