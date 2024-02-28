@@ -64,7 +64,8 @@ class BitLinear(nn.Module):
         input_quant = input_norm / (quant_scale + self.gamma)
 
         # 1.58-bit Weights Quantization
-        weight_quant = max(-1, min(1, torch.round(input_quant)))
+        # weight_quant = max(-1, min(1, torch.round(input_quant)))
+        weight_quant = max(-1, min(1, torch.round(input_quant).item()))
 
         # MatMul with 1-bit weights using torch.matmul for explicit operation
         output = torch.matmul(input_norm, weight_quant.t())
